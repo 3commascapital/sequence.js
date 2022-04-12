@@ -242,9 +242,15 @@ export class Wallet implements WalletProvider {
       this.disconnect()
     }
 
+    console.log('wallet.ts, connect', options)
+    console.log('this.isConnected()', this.isConnected())
+    console.log('!!this.session', !!this.session)
+    console.log('!options?.authorize', !options?.authorize)
+    console.log('!options?.askForEmail', !options?.askForEmail)
+
     if (
       this.isConnected() &&
-      this.isSiteConnected(options?.origin) &&
+      this.isDappConnected(options?.origin) &&
       !!this.session &&
       !options?.authorize &&
       !options?.askForEmail
@@ -278,7 +284,7 @@ export class Wallet implements WalletProvider {
     return connectDetails
   }
 
-  private isSiteConnected(origin: string | undefined): boolean {
+  private isDappConnected(origin: string | undefined): boolean {
     if (!origin) return false
     const connectedDappsKey = LOCAL_STORAGE_KEYS.CONNECTED_DAPPS
     const data = window.localStorage.getItem(connectedDappsKey)
