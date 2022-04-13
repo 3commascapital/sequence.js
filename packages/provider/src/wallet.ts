@@ -203,6 +203,7 @@ export class Wallet implements WalletProvider {
       if (!session) {
         if (this.session && this.session.accountAddress) {
           // emit disconnect even if previously we had a session, and now we don't.
+          console.debug('place where we emit disconnect')
           this.transport.messageProvider!.emit('disconnect')
         }
         this.clearSession()
@@ -211,8 +212,17 @@ export class Wallet implements WalletProvider {
       }
     })
 
-    // below will update the account upon wallet connect/disconnect (aka, login/logout)
+    // below will update the account upon wallet connect/disconnect - aka, login/logout.
+    // if an origin is provided, this operation should be performed only on that origin
+    // and shouldn't affect the session of the wallet.
     this.transport.messageProvider.on('accountsChanged', (accounts: string[], origin?: string) => {
+      if (origin) {
+        if (accounts.length > 0) {
+          this.useSession({ accountAddress: accounts[0] }, true)
+        }
+        return
+      }
+
       if (!accounts || accounts.length === 0 || accounts[0] === '') {
         this.clearSession()
       } else {
@@ -241,12 +251,6 @@ export class Wallet implements WalletProvider {
     if (options?.refresh === true) {
       this.disconnect()
     }
-
-    console.log('wallet.ts, connect', options)
-    console.log('this.isConnected()', this.isConnected())
-    console.log('!!this.session', !!this.session)
-    console.log('!options?.authorize', !options?.authorize)
-    console.log('!options?.askForEmail', !options?.askForEmail)
 
     if (
       this.isConnected() &&
@@ -330,7 +334,10 @@ export class Wallet implements WalletProvider {
     return this.session
   }
 
-  getAddress = async (): Promise<string> => {
+  getAddress = async (origin?: string): Promise<string> => {
+    if (origin && !this.isDappConnected(origin)) {
+      throw new Error(`origin ${origin} is not connected`)
+    }
     if (!this.isConnected()) {
       throw new Error('connect first')
     }

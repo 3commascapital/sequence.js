@@ -103,6 +103,7 @@ export abstract class BaseProviderTransport implements ProviderTransport {
     // NOTE: if we're not signed in, then the provider will fail, users must first connect+sign in.
     //
     // TODO: how does this behave with a session has expired?
+    console.debug('[base-provider-transport] sendAsync', request)
     this.openWallet(undefined, { type: 'jsonRpcRequest', method: request.method }, chainId)
 
     // send message request, await, and then execute callback after receiving the response
@@ -224,7 +225,7 @@ export abstract class BaseProviderTransport implements ProviderTransport {
 
     // ACCOUNTS_CHANGED -- when a user logs in or out
     if (message.type === EventType.ACCOUNTS_CHANGED) {
-      console.log('message.type === EventType.ACCOUNTS_CHANGED', message.data)
+      console.debug('message.type === EventType.ACCOUNTS_CHANGED', message.data)
       this.accountsChangedPayload = { accounts: [] }
       if (message.data && (message.data.length > 0 || message.data.accounts?.length > 0)) {
         this.accountsChangedPayload = {

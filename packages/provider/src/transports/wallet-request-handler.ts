@@ -722,6 +722,7 @@ export class WalletRequestHandler implements ExternalProvider, JsonRpcHandler, P
   }
 
   notifyConnect(connectDetails: ConnectDetails, origin?: string) {
+    console.debug('notifyConnect in walletReqHnadler', origin)
     this.events.emit('connect', connectDetails)
     if (connectDetails.session?.accountAddress) {
       this.events.emit('accountsChanged', [connectDetails.session?.accountAddress], origin)
@@ -729,8 +730,9 @@ export class WalletRequestHandler implements ExternalProvider, JsonRpcHandler, P
   }
 
   notifyDisconnect(origin?: string) {
-    console.log('notifyDisconnect in walletReqHnadler', origin)
+    console.debug('notifyDisconnect in walletReqHnadler', origin)
     this.events.emit('accountsChanged', [], origin)
+    this.events.emit('disconnect')
   }
 
   async notifyNetworks(networks?: NetworkConfig[]) {

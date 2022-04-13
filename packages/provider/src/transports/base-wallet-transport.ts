@@ -208,7 +208,7 @@ export abstract class BaseWalletTransport implements WalletTransport {
   }
 
   notifyAccountsChanged(accounts: string[], origin?: string) {
-    console.log('notifyAccountsChanged in BaseWalletTransport', accounts, origin)
+    console.debug('notifyAccountsChanged in BaseWalletTransport', accounts, origin)
     this.sendMessage({
       idx: -1,
       type: EventType.ACCOUNTS_CHANGED,
@@ -411,7 +411,7 @@ export abstract class BaseWalletTransport implements WalletTransport {
         try {
           const connectDetails = await this.walletRequestHandler.promptConnect(intent.options)
           if (connectDetails.connected) {
-            this.walletRequestHandler.notifyConnect(connectDetails)
+            this.walletRequestHandler.notifyConnect(connectDetails, intent.options?.origin)
           }
         } catch (err) {
           logger.warn('promptConnect not connected:', err)
